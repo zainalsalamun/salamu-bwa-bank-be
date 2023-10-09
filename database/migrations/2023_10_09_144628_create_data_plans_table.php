@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('data_plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->boolean('verified')->nullable();
-            $table->string('profile_picture');
-            $table->string('ktp');
-            $table->rememberToken();
+            $table->float('price');
+            $table->foreignId('operator_cards_id')->constrained('operator_cards');
             $table->timestamps();
         });
     }
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('data_plans');
     }
 };
