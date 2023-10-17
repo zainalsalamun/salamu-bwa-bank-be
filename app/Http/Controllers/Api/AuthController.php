@@ -34,7 +34,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->exists();
 
         if ($user) {
-            return response()->json(['errors'=> 'User already exists'], 400);
+            return response()->json(['errors'=> 'User already exists'], 409);
         }
 
         DB::beginTransaction();
@@ -56,7 +56,6 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'username' => $request->email,
-                'pin' => $request->pin,
                 'password' => bcrypt($request->password),
                 'profile_picture' => $profilePicture,
                 'ktp' => $ktp,
@@ -66,7 +65,7 @@ class AuthController extends Controller
             Wallet::create([
                 'user_id' => $user->id,
                 'balance' => 0,
-                'pin' => $user->pin,
+                'pin' => $request->pin,
                 'card_number' => $this->generateCardNumber(16),
             ]);
             DB::commit();
