@@ -51,7 +51,17 @@ class topUpController extends Controller
             ]);
 
             //call to midtrans
+            $params = $this-> buildMidtransParamates([
+               'trancaction_code' => $transaction->transaction_code,
+               'amount' => $request->amount,
+               'payment_method' => $paymentMethod->code
+            ]);
+
+            $midtrans = $this-> callMidtrans($params);
+
             DB::commit();
+
+            return response()->json($midtrans, 200);
 
         } catch (\Throwable $th) {
             DB::rollback();
@@ -59,4 +69,65 @@ class topUpController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    private function callMidtrans(array $params)
+    {
+
+    \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+    \Midtrans\Config::$isProduction = (bool)env('MIDTRANS_IS_PRODUCTION');
+    \Midtrans\Config::$isSanitized = (bool)env ('MIDTRANS_IS_SANITIZED');
+    \Midtrans\Config::$is3ds = env ('MIDTRANS_IS_3DS');
+
+    $createTransaction = \Midtrans\Snap::createTransaction($params);
+
+    return [
+        'redirect_url' => $createTransaction->redirect_url,
+        'token' => $createTransaction->token
+    ];
+
+    }
+
+    private function buildMidtransParamates(array $params)
+    {
+        $transactionDetails = [
+            'order_id' => $params['trancaction_code'],
+            'gross_amount' => $params['amount']
+        ];
+
+        $user = auth()->user();
+        $splitName = $this->splitName($user->name);
+        $customerDetails =[
+            'first_name' => $splitName['first_name'],
+            'last_name' => $splitName['last_name'],
+            'email' => $user->email,
+            'phone' => $user->phone
+        ];
+
+        $enabledPayment =[
+            $params['payment_method']
+        ];
+
+        return [
+            'transaction_details' => $transactionDetails,
+            'customer_details' => $customerDetails,
+            'enabled_payments' => $enabledPayment
+        ];
+
+
+    }
+
+    private function splitName($fullname)
+
+    {
+        $name = explode(' ', $fullname);
+        $lastName = ($name) > 1 ? array_pop($name) : $fullname;
+        $firstName = implode(' ', $name);
+
+        return [
+            'first_name' => $firstName,
+            'last_name' => $lastName
+        ];
+    }
+
+
 }
