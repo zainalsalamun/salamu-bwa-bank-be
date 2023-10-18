@@ -40,7 +40,5 @@ Route::group(['middleware' => 'jwt.verify'], function ($router) {
    Route::get('payment_methods', [PaymentMethodController::class, 'index']);
    Route::get('transfer_histories', [TransferHistoryController::class, 'index']);
 
-
-
 });
 
