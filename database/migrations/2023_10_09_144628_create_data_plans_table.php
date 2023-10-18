@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('price');
-            $table->foreignId('operator_cards_id')->constrained('operator_cards');
+            $table->foreignId('operator_card_id')->constrained('operator_cards');
             $table->timestamps();
         });
     }
