@@ -9,7 +9,7 @@ use App\http\Controllers\Api\WebhookController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\OperatorCardController;
 use App\Http\Controllers\Api\PaymentMethodController;
-use App\Models\OperatorCard;
+use App\Http\Controllers\Api\TransferHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +38,8 @@ Route::group(['middleware' => 'jwt.verify'], function ($router) {
    Route::post('data_plans', [DataPlanController::class, 'store']);
    Route::get('operator_cards', [OperatorCardController::class, 'index']);
    Route::get('payment_methods', [PaymentMethodController::class, 'index']);
+   Route::get('transfer_histories', [TransferHistoryController::class, 'index']);
+
 
 
 });
