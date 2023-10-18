@@ -73,28 +73,28 @@ class TransferController extends Controller
             $paymentMethod = PaymentMethod::where('code','bwa')->first();
 
             //transfer for transfer
-            $TransferTransaction = Transaction::create([
+            $transferTransaction = Transaction::create([
                 'user_id' => $sender->id,
                 'transaction_type_id' => $transferTransactionType->id,
-                'decription' => 'Transfer funds to '.$receiver->username,
+                'description' => 'Transfer funds to '.$receiver->username,
                 'amount' => $request->amount,
-                'payment_method_id' => $paymentMethod->id,
                 'transaction_code' => $transactionCode,
-                'status' => 'success'
+                'status' => 'success',
+                'payment_method_id' => $paymentMethod->id
             ]);
 
             //transfer for send
             $senderWallet->decrement('balance', $request->amount);
 
             //transfer for receive
-            $transaction = Transaction::create([
+            $transferTransaction = Transaction::create([
                 'user_id' => $receiver->id,
-                'payment_method_id' => $paymentMethod->id,
                 'transaction_type_id' => $receiveTransactionType->id,
+                'description' => 'Receive funds from '.$sender->username,
                 'amount' => $request->amount,
                 'transaction_code' => $transactionCode,
-                'decription' => 'Receive funds from '.$sender->username,
-                'status' => 'success'
+                'status' => 'success',
+                'payment_method_id' => $paymentMethod->id,
             ]);
 
             Wallet ::where('user_id', $receiver->id)->increment('balance', $request->amount);
@@ -106,7 +106,6 @@ class TransferController extends Controller
             ]);
 
             DB::commit();
-
             return response(['message' => 'Transfer Success'], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
