@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\OperatorCardController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\TransferHistoryController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +43,8 @@ Route::group(['middleware' => 'jwt.verify'], function ($router) {
    Route::get('payment_methods', [PaymentMethodController::class, 'index']);
    Route::get('transfer_histories', [TransferHistoryController::class, 'index']);
    Route::get('transactions', [TransactionController::class, 'index']);
+   Route::get('users', [UserController::class, 'show']);
+
 
 
 });
