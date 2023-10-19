@@ -20,5 +20,27 @@ class WalletController extends Controller
             return response()->json($wallet);
     }
 
+    public function update(Request $request)
+    {
+        $validator = Validator::make(request()->all(), [
+            'previous_pin' => 'required|digits:6',
+            'new_pin' => 'required|digits:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors'=> $validator->messages()], 400);
+        }
+
+        if (!pinChecker($request->previous_pin)) {
+            return response()->json(['messages'=> 'You old pin is wrong'], 400);
+        }
+
+        $user = auth()->user();
+
+        Wallet::where('user_id', $user->id)
+                ->update(['pin' => $request->new_pin]);
+        return response()->json(['messages'=> 'Pin updated successfully'], 200);
+
+    }
 
 }
